@@ -3,10 +3,8 @@ import time, sched, queue
 from piball.control.output import PiballOutputHandler
 from piball.game.event_processor import PiballEventProcessor
 from piball.game.piball import PiballGame
-from piball.serial_comms.mbed import MbedCommunicator
 from piball.control.input import PiballInputHandler
 
-#game = PiballGame()
 
 output_pins = {
     'flipper_left_out': 16,
@@ -26,9 +24,11 @@ input_pins = {
     'fail': 15
 }
 
-output_handler = PiballOutputHandler(output_pins)
 event_queue = queue.Queue()
 action_scheduler = sched.scheduler(time.time, time.sleep)
-game = PiballGame()
-event_processor = PiballEventProcessor(event_queue, action_scheduler, game)
+output_handler = PiballOutputHandler(output_pins)
+game = PiballGame(output_handler)
+event_processor = PiballEventProcessor(event_queue, action_scheduler, game, output_handler)
 input_handler = PiballInputHandler(event_queue, input_pins)
+event_processor.start()
+event_processor.join()

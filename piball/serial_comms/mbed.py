@@ -10,6 +10,6 @@ class MbedCommunicator:
         self.port.write(command.encode('latin-1'))
         maybe_ack = self.port.readline()
         if maybe_ack == 'ack\n':
-            print('Command sent successfully')
+            print('MBED: Command sent successfully')
         else:
-            print('Command was not acknowledged')
+            print('MBED: Command was not acknowledged')
