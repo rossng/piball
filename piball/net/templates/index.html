@@ -1,0 +1,80 @@
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+
+</script>
+
+
+</canvas>
+
+
+<html>
+
+    <head>
+
+
+    </head>
+
+
+    <body>
+    <canvas id = "gameCanvas" width="400" height="400"
+            style="border:1px solid #000000;">
+    </canvas>
+    <script>
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('message', {data: 'I\'m connected!'});
+
+    });
+
+
+    var elem = document.getElementById('gameCanvas'),
+    elemLeft = elem.offsetLeft,
+    elemTop = elem.offsetTop,
+    context = elem.getContext('2d'),
+    elements = [];
+
+    // Add event listener for `click` events.
+    elem.addEventListener('click', function(event) {
+        var x = event.pageX - elemLeft,
+            y = event.pageY - elemTop;
+        console.log(x, y);
+        elements.forEach(function(element) {
+            if (y > element.top && y < element.top + element.height && x > element.left && x < element.left + element.width) {
+                socket.emit('message', {data: 'Clicked button'});
+            }
+        });
+
+    }, false);
+
+    // Add element.
+    elements.push({
+        colour: '#05EFFF',
+        width: 50,
+        height: 100,
+        top: 20,
+        left: 15
+    });
+
+    elements.push({
+        colour: '#FFFFFF',
+        width: 50,
+        height: 100,
+        top: 20,
+        left: 100
+    });
+
+
+    // Render elements.
+    elements.forEach(function(element) {
+        context.fillStyle = element.colour;
+        context.fillRect(element.left, element.top, element.width, element.height);
+    });
+
+    </script>
+
+
+    </body>
+
+</html>
