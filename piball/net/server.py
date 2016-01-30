@@ -79,9 +79,6 @@ def notifyReady():
     data = { 'id' : 2 }
     socketio.emit('gameUpdate' , data  , room = 'ready' )
 
-def notifyUsers():
-    a = 2
-
 
 
 @socketio.on('play')
