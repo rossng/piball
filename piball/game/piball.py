@@ -1,19 +1,16 @@
-from piball.control.controller import PiballController
-import time, sched
-
-try:
-    import RPi.GPIO as GPIO
-except RuntimeError:
-    print("Error importing RPi.GPIO")
+from piball.control.output import PiballOutputHandler
 
 
 class PiballGame:
-    def __init__(self):
-        controller = PiballController()
+    def __init__(self, output_handler: PiballOutputHandler):
+        self.output_handler = output_handler
+        self.score = 0
+        self.reset()
 
-    def button_pressed(self, channel):
-        print('Button pressed on channel %s' % channel)
+    def reset(self):
+        self.score = 0
 
-    def play(self):
-        GPIO.setup(12, GPIO.IN)
-        GPIO.add_event_detect(12, GPIO.RISING, callback=self.button_pressed)
+    def increment_score(self):
+        self.score += 1
+        print('GAME: new score ' + str(self.score))
+
