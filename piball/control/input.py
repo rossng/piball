@@ -1,6 +1,6 @@
 import queue
 
-from piball.control.piballevent import PiballEvent
+from piball.control.piball_event import PiballEvent
 
 try:
     import RPi.GPIO as GPIO

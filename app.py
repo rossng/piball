@@ -10,10 +10,10 @@ from flask import Flask , render_template ,session , request
 from piball.control.piballevent import PiballEvent
 
 output_pins = {
-    'flipper_left_out': 16,
-    'flipper_right_out': 18,
-    'winding_motor_out': 12,  # PWM
-    'plunger_out': 22,
+    'flipper_left': 16,
+    'flipper_right': 18,
+    'winding_motor': 12,  # PWM
+    'plunger_pin': 22,
     'mbed_tx': 8,  # UART Tx
     'mbed_rx': 10  # UART Rx
 }
@@ -24,7 +24,8 @@ input_pins = {
     'bumper_1': 29,
     'bumper_2': 31,
     'bumper_3': 33,
-    'fail': 15
+    'fail': 15,
+    'plunger_button': 24
 }
 
 

@@ -111,33 +111,11 @@
         sessionID = data.id
     });
 
-
-
-    function updateGameState(state){
-
-
-        if(game.playing) {
-
-
-            //Update score
-
-        }else{
-
-
-
-        }
-
-    }
-
-
     function functionPlayGame(){
-
         socket.emit("play");
-
     }
 
     function endGame(){
-
         socket.emit("endGame");
 
     }
@@ -220,8 +198,6 @@
         }
 
     }
-
-
 
     //Currently someone else is playing, need to wait
     function showWaitingScreen(){
