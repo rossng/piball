@@ -139,8 +139,8 @@ action_scheduler = sched.scheduler(time.time, time.sleep)
 mbed = MbedCommunicator()
 mbed.start()
 output_handler = PiballOutputHandler(output_pins, mbed)
-game = PiballGame(output_handler, event_queue, socket)
-event_processor = PiballEventProcessor(event_queue, action_scheduler, game, output_handler)
+currentGame = PiballGame(output_handler, event_queue, socket)
+event_processor = PiballEventProcessor(event_queue, action_scheduler, currentGame, output_handler)
 input_handler = PiballInputHandler(event_queue, input_pins)
 
 

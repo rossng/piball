@@ -11,10 +11,11 @@ class GameEvent(Enum):
 
 
 class PiballGame:
-    score = 0                       # what is the user's current score?
-    lives = 0                       # how many lives does the user have?
-    ball_in_play = False            # is there a ball in play?
-    score_multiplier = 1            # is the user currently in double-scoring mode?
+    score = 0  # what is the user's current score?
+    lives = 0  # how many lives does the user have?
+    ball_in_play = False  # is there a ball in play?
+    score_multiplier = 1  # is the user currently in double-scoring mode?
+
     def __init__(self, output_handler: PiballOutputHandler, event_queue: Queue, socket):
         self.output_handler = output_handler
         self.event_queue = event_queue
@@ -40,15 +41,13 @@ class PiballGame:
 
     def increment_score(self, by=1):
         self.score += 1 * self.score_multiplier
-        self.socket.emit('currentGame' , self.tojson()  , room = 'play' )
+        self.socket.emit('currentGame', self.tojson(), room='play')
         print('GAME: score ' + str(self.score))
 
-    def  tojson(self):
-        json = {}
-        json["score"] = self.score
-        json["playing"] =  self.playing
-        json["user"] = self.user
+    def tojson(self):
+        json = {"score": self.score, "playing": self.playing, "user": self.user}
         return json
+
     def ball_fired(self):
         self.ball_in_play = True
 

@@ -17,7 +17,7 @@ class MbedCommunicator(threading.Thread):
         while True:
             try:
                 command = self.command_queue.get_nowait()
-                print('EVP: Processing event ' + str(command))
+                print('EVP: Processing command ' + str(command))
                 self.send_command(command)
             except queue.Empty:
                 continue
