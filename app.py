@@ -33,7 +33,7 @@ input_pins = {
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!d'
-socket = SocketIO(app, async_mode="threading")
+socket = SocketIO(app, ping_timeout  = 5 , ping_interval =3)
 
 
 @app.route("/")
