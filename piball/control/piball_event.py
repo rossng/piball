@@ -16,3 +16,6 @@ class PiballEvent(Enum):
     bumper_3_off = 12
     plunger_button_on = 13
     plunger_button_off = 14
+    pad_on = 15
+    pad_off = 16
+    game_over = 17

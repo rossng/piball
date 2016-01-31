@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 from typing import Mapping
 
 from piball.serial_comms.mbed import MbedCommunicator
+from piball.serial_comms.mbed_modes import MbedMode
 
 
 class PiballOutputHandler:
@@ -27,13 +28,13 @@ class PiballOutputHandler:
         else:
             GPIO.output(self.pins['plunger_pin'], status)
 
-    def set_neopixel_mode(self, mode: int):
-        self.mbed.send_command("b")
+    def set_neopixel_mode(self, mode: MbedMode):
+        self.mbed.send_command(mode)
 
-    def __init__(self, output_pins: Mapping[str, int]):
+    def __init__(self, output_pins: Mapping[str, int], mbed: MbedCommunicator):
         GPIO.cleanup()
         self.pins = output_pins
-        self.mbed = MbedCommunicator()
+        self.mbed = mbed
         GPIO.setmode(GPIO.BOARD)
 
         for pin in self.pins.values():

@@ -3,6 +3,7 @@ import threading, queue, sched
 from piball.control.output import PiballOutputHandler
 from piball.control.piball_event import PiballEvent
 from piball.game.piball import PiballGame
+from piball.serial_comms.mbed_modes import MbedMode
 
 
 class PiballEventProcessor(threading.Thread):
@@ -29,7 +30,6 @@ class PiballEventProcessor(threading.Thread):
         if event is PiballEvent.left_flipper_button_on:
             self.action_scheduler.enter(0, 1, self.output_handler.set_flipper, argument=(0, 1))      # flip up
             self.action_scheduler.enter(0.5, 1, self.output_handler.set_flipper, argument=(0, 0))    # then flip down
-            self.action_scheduler.enter(0, 2, self.output_handler.set_neopixel_mode, argument=(1,))
 
         # when the user presses the right flipper button
         elif event is PiballEvent.right_flipper_button_on:
@@ -49,3 +49,13 @@ class PiballEventProcessor(threading.Thread):
             self.action_scheduler.enter(3, 1, self.output_handler.set_winding_motor, argument=(0,)) # stop loosening
             self.action_scheduler.enter(4, 1, self.output_handler.set_plunger_pin, argument=(0,))   # release pin
             self.action_scheduler.enter(4, 1, self.game.ball_fired)                                 # notify game that ball fired
+
+        # when the ball rolls onto a bumper
+        elif event is PiballEvent.bumper_1_on or event is PiballEvent.bumper_2_on or event is PiballEvent.bumper_3_on:
+            self.action_scheduler.enter(0, 1, self.game.bumper_hit)
+
+        # when the ball rolls across the neopixel pad
+        elif event is PiballEvent.pad_on:
+            pass
+            self.action_scheduler.enter(0, 1, self.output_handler.set_neopixel_mode(MbedMode.spin))
+            self.action_scheduler.enter(5, 1, self.output_handler.set_neopixel_mode(MbedMode.normal))

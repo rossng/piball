@@ -1,16 +1,28 @@
-import serial, io
+import threading
+
+import serial, io, queue
+
+from piball.serial_comms.mbed_modes import MbedMode
 
 
-class MbedCommunicator:
-    def __init__(self, baudrate=115200, timeout=3.0):
-        self.port = serial.Serial("/dev/ttyUSB0", baudrate=baudrate, timeout=timeout)
+class MbedCommunicator(threading.Thread):
+    mode_map = {MbedMode.normal: b'b', MbedMode.spin: b'a'}
 
-    def send_command(self, char):
-        self.port.write('\x02'.encode('latin-1'))
-        self.port.write(char.encode('latin-1'))
-        print('MBED: Sent serial command')
-        maybe_ack = self.port.readline()
-        if maybe_ack == '\x06':
-            print('MBED: Command sent successfully')
-        else:
-            print('MBED: Command was not acknowledged')
+    def __init__(self, baudrate=115200):
+        self.port = serial.Serial("/dev/ttyAMA0", baudrate=baudrate)
+        self.command_queue = queue.Queue()
+        threading.Thread.__init__(self)
+
+    def run(self):
+        while True:
+            try:
+                command = self.command_queue.get_nowait()
+                print('EVP: Processing event ' + str(command))
+                self.send_command(command)
+            except queue.Empty:
+                continue
+
+    def send_command(self, mode: MbedMode):
+        self.port.write(b's')
+        self.port.write(self.mode_map[mode])
+        print('MBED: Sent serial command ' + str(mode))
