@@ -7,9 +7,9 @@ from piball.control.input import PiballInputHandler
 
 
 output_pins = {
-    'flipper_left_out': 16,
-    'flipper_right_out': 18,
-    'winding_motor_out': 12,  # PWM
+    'flipper_left': 16,
+    'flipper_right': 18,
+    'winding_motor': 12,  # PWM
     'plunger_out': 22,
     'mbed_tx': 8,  # UART Tx
     'mbed_rx': 10  # UART Rx
