@@ -8,6 +8,7 @@ class MbedCommunicator:
     def send_command(self, command_text):
         command = command_text + '\n'
         self.port.write(command.encode('latin-1'))
+        print('MBED: Sent serial command')
         maybe_ack = self.port.readline()
         if maybe_ack == 'ack\n':
             print('MBED: Command sent successfully')

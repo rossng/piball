@@ -10,7 +10,7 @@ output_pins = {
     'flipper_left': 16,
     'flipper_right': 18,
     'winding_motor': 12,  # PWM
-    'plunger_out': 22,
+    'plunger_pin': 22,
     'mbed_tx': 8,  # UART Tx
     'mbed_rx': 10  # UART Rx
 }
@@ -21,7 +21,8 @@ input_pins = {
     'bumper_1': 29,
     'bumper_2': 31,
     'bumper_3': 33,
-    'fail': 15
+    'fail': 15,
+    'plunger_button': 24
 }
 
 event_queue = queue.Queue()

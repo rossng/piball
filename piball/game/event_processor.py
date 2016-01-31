@@ -1,7 +1,7 @@
 import threading, queue, sched
 
 from piball.control.output import PiballOutputHandler
-from piball.control.piballevent import PiballEvent
+from piball.control.piball_event import PiballEvent
 from piball.game.piball import PiballGame
 
 
@@ -25,11 +25,27 @@ class PiballEventProcessor(threading.Thread):
                 continue
 
     def process_event(self, event):
+        # when the user presses the left flipper button
         if event is PiballEvent.left_flipper_button_on:
-            self.action_scheduler.enter(0, 1, self.output_handler.set_flipper, argument=(0, 1))   # flip up
-            self.action_scheduler.enter(0.5, 1, self.output_handler.set_flipper, argument=(0, 0)) # then flip down
-            self.action_scheduler.enter(0, 2, self.game.increment_score)
+            self.action_scheduler.enter(0, 1, self.output_handler.set_flipper, argument=(0, 1))      # flip up
+            self.action_scheduler.enter(0.5, 1, self.output_handler.set_flipper, argument=(0, 0))    # then flip down
+            self.action_scheduler.enter(0, 2, self.output_handler.set_neopixel_mode, argument=(1,))
+
+        # when the user presses the right flipper button
         elif event is PiballEvent.right_flipper_button_on:
-            self.action_scheduler.enter(0, 1, self.output_handler.set_flipper, argument=(1, 1))   # flip up
-            self.action_scheduler.enter(0.5, 1, self.output_handler.set_flipper, argument=(1, 0)) # then flip down
-            self.action_scheduler.enter(0, 2, self.game.increment_score)
+            self.action_scheduler.enter(0, 1, self.output_handler.set_flipper, argument=(1, 1))    # flip up
+            self.action_scheduler.enter(0.5, 1, self.output_handler.set_flipper, argument=(1, 0))  # then flip down
+
+        # when the ball goes out
+        elif event is PiballEvent.fail_on:
+            self.action_scheduler.enter(0, 1, self.output_handler.set_winding_motor, argument=(1,))  # pull back elastic
+            self.action_scheduler.enter(5, 1, self.output_handler.set_winding_motor, argument=(0,))  # stop pulling
+            self.action_scheduler.enter(0, 1, self.game.ball_out)                                    # notify game that ball is out
+
+        # when the user presses the auto-plunge button
+        elif event is PiballEvent.plunger_button_on:
+            self.action_scheduler.enter(0, 1, self.output_handler.set_plunger_pin, argument=(1,))   # hold pin down
+            self.action_scheduler.enter(0, 1, self.output_handler.set_winding_motor, argument=(2,)) # loosen elastic hold
+            self.action_scheduler.enter(3, 1, self.output_handler.set_winding_motor, argument=(0,)) # stop loosening
+            self.action_scheduler.enter(4, 1, self.output_handler.set_plunger_pin, argument=(0,))   # release pin
+            self.action_scheduler.enter(4, 1, self.game.ball_fired)                                 # notify game that ball fired
