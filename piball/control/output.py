@@ -13,7 +13,7 @@ class PiballOutputHandler:
         elif id == 1:
             GPIO.output(self.pins['flipper_right_out'], pos)
 
-    def __init__(self, output_pins: Mapping[str, int]):
+    def __init__(self, output_pins: Mapping[str, int] ):
         self.pins = output_pins
         self.mbed = MbedCommunicator()
         self.mbed.send_command("hello")
