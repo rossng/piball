@@ -28,7 +28,7 @@ class PiballOutputHandler:
             GPIO.output(self.pins['plunger_pin'], status)
 
     def set_neopixel_mode(self, mode: int):
-        self.mbed.send_command("hello")
+        self.mbed.send_command("b")
 
     def __init__(self, output_pins: Mapping[str, int]):
         GPIO.cleanup()
