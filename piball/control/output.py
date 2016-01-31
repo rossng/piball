@@ -35,6 +35,7 @@ class PiballOutputHandler:
         GPIO.cleanup()
         self.pins = output_pins
         self.mbed = mbed
+        self.mbed.send_command("hello")
         GPIO.setmode(GPIO.BOARD)
 
         for pin in self.pins.values():

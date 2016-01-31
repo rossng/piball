@@ -6,7 +6,7 @@ from piball.serial_comms.mbed_modes import MbedMode
 
 
 class MbedCommunicator(threading.Thread):
-    mode_map = {MbedMode.normal: b'b', MbedMode.spin: b'a'}
+    mode_map = {MbedMode.normal: b'b', MbedMode.colourful: b'a'}
 
     def __init__(self, baudrate=115200):
         self.port = serial.Serial("/dev/ttyAMA0", baudrate=baudrate)

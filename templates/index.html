@@ -1,0 +1,242 @@
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript" src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+
+</script>
+
+
+</canvas>
+
+
+<html>
+
+    <head>
+
+
+    </head>
+
+
+    <body>
+    <canvas id = "gameCanvas" width="400" height="400"
+            style="border:1px solid #000000;">
+    </canvas>
+    <script>
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('connect', function(data){
+
+        i = 2;
+    });
+
+    var sessionID = -1;
+
+    var canvasHeight = 400;
+    var canvasWidth = 400;
+
+    var buttonRadius = canvasHeight / 4;
+    var buttonsY = canvasHeight - buttonRadius
+
+    var stage = new createjs.Stage("gameCanvas");
+
+    var leftTrigger = new createjs.Shape();
+    var rightTrigger = new createjs.Shape();
+
+    var scoreText = new createjs.Text("", "20px Arial", "#ff7700");
+
+    scoreText.x = canvasWidth /2;
+    scoreText.y = canvasHeight / 4;
+
+
+
+    leftTrigger.graphics.beginFill("DeepSkyBlue").drawCircle(buttonRadius, buttonsY, buttonRadius);
+    rightTrigger.graphics.beginFill("#ff0000").drawCircle(buttonRadius*3, buttonsY, buttonRadius);
+
+
+
+
+
+
+
+    function playButtonClick(event){
+        console.log("Play new game")
+        socket.emit("play");
+         //socket.emit("test" , {id : sessionID});
+    }
+
+    leftTrigger.addEventListener("click", leftTriggerClick);
+    function leftTriggerClick(event){
+        socket.emit("gameInput", {control: 'left' });
+    }
+
+    rightTrigger.addEventListener("click", rightTriggerClick);
+    function rightTriggerClick(event){
+        socket.emit("gameInput", {control: 'right' });
+    }
+
+    function endGameButtonClick(event){
+        socket.emit("finishGame");
+    }
+    socket.on('endCurrentGame', function(data){
+        showEndScreen(data);
+    });
+
+
+    socket.on('gameUpdate', function(data){
+
+        var id = data.id
+        if(id == 2){
+            showStartingScreen();
+        }else{
+            showWaitingScreen();
+        }
+
+    });
+
+    socket.on('startWaiting', function(data){
+        socket.emit('startWait');
+    });
+
+    socket.on('stopWaiting', function(data){
+        socket.emit('stopWait');
+    });
+
+    socket.on('currentGame' , function(data){
+        displayGame(data);
+    });
+
+
+    socket.on('notify', function(data){
+        sessionID = data.id
+    });
+
+    function functionPlayGame(){
+        socket.emit("play");
+    }
+
+    function endGame(){
+        socket.emit("endGame");
+
+    }
+
+    function displayGame(game){
+
+
+        var endGameButton = new createjs.Shape();
+        var endGameText = new createjs.Text("Exit", "20px Arial", "#ff7700")
+
+        endGameText.x = canvasWidth / 4;
+        endGameText.y = canvasHeight / 16;
+        endGameButton.graphics.beginFill("#ff0000").drawRect(0 , 0 , canvasWidth  , canvasHeight / 8);
+
+        endGameButton.addEventListener("click" , endGameButtonClick)
+
+
+        stage.removeAllChildren();
+
+        stage.addChild(endGameButton);
+        stage.addChild(endGameText);
+        stage.addChild(leftTrigger);
+        stage.addChild(rightTrigger);
+        scoreText.text = "Score "+game.score;
+        stage.addChild(scoreText);
+        stage.update();
+
+    }
+
+
+
+
+    //To be called when game has ended, either by loosing or exiting early
+    function showEndScreen(game){
+
+        var restartButton = new createjs.Shape();
+        var submitButton = new createjs.Shape();
+
+        var restartText = new createjs.Text("Restart", "20px Arial", "#ff7700");
+        var submitText = new createjs.Text("Submit", "20px Arial", "#ff7700");
+        var scoreText = new createjs.Text("", "20px Arial", "#000000");
+
+        restartButton.graphics.beginFill("DeepSkyBlue").drawRect(0, canvasHeight - canvasHeight / 8  , canvasWidth , canvasHeight / 8);
+        submitButton.graphics.beginFill("#ff0066").drawRect(0, canvasHeight - 2 * canvasHeight / 8 , canvasWidth , canvasHeight / 8);
+
+        restartButton.addEventListener("click" , endGame);
+
+        restartText.x = canvasWidth/2;
+        restartText.y = canvasHeight - canvasHeight / 16 ;
+
+        submitText.x = canvasWidth/2;
+        submitText.y = canvasHeight - 2 * canvasHeight / 8 + canvasHeight / 16;
+
+        scoreText.x = canvasWidth/ 2;
+        scoreText.y = canvasHeight / 2;
+
+        stage.removeAllChildren();
+
+        scoreText.text = game.score;
+
+        stage.addChild(scoreText);
+        stage.addChild(restartButton);
+        stage.addChild(submitButton);
+        stage.addChild(restartText);
+        stage.addChild(submitText);
+        stage.update();
+
+    }
+
+
+
+
+
+    function displayNotPlaying(game){
+
+        if(game.playing == 1){ //If a game is playing the user must wait
+            showWaitingScreen(game);
+        }else{
+            showStartingScreen(game);
+        }
+
+    }
+
+    //Currently someone else is playing, need to wait
+    function showWaitingScreen(){
+
+        var waitingText = new createjs.Text("Waiting", "40px Arial", "#ff7700");
+        waitingText.x = canvasWidth / 4;
+        waitingText.y = canvasHeight / 2;
+        stage.removeAllChildren();
+        stage.addChild(waitingText);
+        stage.update();
+    }
+
+
+
+
+    //We can start the game
+    function showStartingScreen(){
+
+        var beginButton = new createjs.Shape();
+        var beginText = new createjs.Text("Play", "20px Arial", "#ff7700");
+        beginButton.graphics.beginFill("DeepSkyBlue").drawRect(0 , canvasHeight - canvasHeight / 4 , canvasWidth  , canvasHeight / 4);
+        beginButton.addEventListener("click" , playButtonClick);
+
+        beginText.x = canvasWidth / 2;
+        beginText.y = canvasHeight - canvasHeight / 4 + canvasHeight / 8;
+
+        stage.removeAllChildren();
+        stage.addChild(beginButton);
+        stage.addChild(beginText);
+        stage.update();
+    }
+
+
+    //Being running here
+    showWaitingScreen();
+
+    </script>
+
+
+    </body>
+
+</html>
