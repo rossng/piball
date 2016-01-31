@@ -52,10 +52,15 @@ class PiballEventProcessor(threading.Thread):
 
         # when the ball rolls onto a bumper
         elif event is PiballEvent.bumper_1_on or event is PiballEvent.bumper_2_on or event is PiballEvent.bumper_3_on:
-            self.action_scheduler.enter(0, 1, self.game.bumper_hit)
+            self.action_scheduler.enter(0, 1, self.game.increment_score, argument=(20,))
 
         # when the ball rolls across the neopixel pad
         elif event is PiballEvent.pad_on:
-            pass
-            self.action_scheduler.enter(0, 1, self.output_handler.set_neopixel_mode(MbedMode.spin))
-            self.action_scheduler.enter(5, 1, self.output_handler.set_neopixel_mode(MbedMode.normal))
+            self.action_scheduler.enter(0, 1, self.output_handler.set_neopixel_mode, argument=(MbedMode.colourful,))
+            self.action_scheduler.enter(5, 1, self.output_handler.set_neopixel_mode, argument=(MbedMode.normal,))
+            self.action_scheduler.enter(0, 1, self.game.increment_score, argument=(50,))
+            self.action_scheduler.enter(0, 1, self.game.update_score_multiplier, argument=(2,))
+
+        elif event is PiballEvent.game_over:
+            self.action_scheduler.enter(0, 1, self.output_handler.set_neopixel_mode, argument=(MbedMode.dead,))
+

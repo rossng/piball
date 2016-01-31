@@ -14,7 +14,7 @@ class PiballGame:
     score = 0                       # what is the user's current score?
     lives = 0                       # how many lives does the user have?
     ball_in_play = False            # is there a ball in play?
-    super_score_mode = False        # is the user currently in double-scoring mode?
+    score_multiplier = 1            # is the user currently in double-scoring mode?
 
     def __init__(self, output_handler: PiballOutputHandler, event_queue: Queue):
         self.output_handler = output_handler
@@ -25,10 +25,11 @@ class PiballGame:
         self.ball_in_play = False
         self.score = 0
         self.lives = 3
+        self.score_multiplier = 1
         print('GAME: new game')
 
     def increment_score(self, by=1):
-        self.score += 1 * (2 if self.super_score_mode else 1)
+        self.score += 1 * self.score_multiplier
         print('GAME: score ' + str(self.score))
 
     def ball_fired(self):
@@ -38,9 +39,11 @@ class PiballGame:
         if self.ball_in_play:
             self.lose_life()
         self.ball_in_play = False
+        self.score_multiplier = 1
 
-    def bumper_hit(self):
-        self.increment_score(by=20)
+    def update_score_multiplier(self, factor: float):
+        self.score_multiplier *= factor
+        print('GAME: score multiplier ' + str(self.score_multiplier))
 
     def lose_life(self):
         self.lives -= 1

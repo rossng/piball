@@ -19,3 +19,7 @@ class PiballEvent(Enum):
     pad_on = 15
     pad_off = 16
     game_over = 17
+    bumper_left_on = 18
+    bumper_left_off = 19
+    bumper_right_on = 20
+    bumper_right_off = 21
